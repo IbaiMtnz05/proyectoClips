@@ -1,55 +1,77 @@
+; ==========================================================
+; templates.clp
+; Estructura de hechos del juego Othello/Reversi.
+; Aqui solo definimos los datos; la logica vive en rules.clp
+; y las utilidades en functions.clp.
+; ==========================================================
+
 (deftemplate init-request
-    (slot size (type INTEGER))
-)
+    ; Peticion para arrancar una nueva partida con un tamano concreto.
+    (slot size (type INTEGER)))
 
 (deftemplate game
+    ; Estado global de la partida.
     (slot size (type INTEGER))
-    (slot turn (type INTEGER))
-    (slot status (type SYMBOL) (allowed-symbols setup playing finished))
-)
+    (slot turn (type SYMBOL) (allowed-symbols black white))
+    (slot status (type SYMBOL) (allowed-symbols setup playing finished)))
 
 (deftemplate cell
+    ; Una casilla del tablero. La coordenada empieza en 1.
     (slot row (type INTEGER))
     (slot col (type INTEGER))
-    (slot piece (type INTEGER) (allowed-symbols -1 0 1))
-)
+    (slot piece (type SYMBOL) (allowed-symbols empty black white)))
 
 (deftemplate player
-    (slot color (type INTEGER) (allowed-symbols -1 1))
-    (slot pieces (type INTEGER))
-)
+    ; Contador de fichas de cada color.
+    (slot color (type SYMBOL) (allowed-symbols black white))
+    (slot on-board (type INTEGER))
+    (slot reserve (type INTEGER)))
 
-(deftemplate legal-moves
+(deftemplate valid-move
+    ; Jugadas validas para el turno actual.
     (slot row (type INTEGER))
     (slot col (type INTEGER))
-    (slot piece (type INTEGER) (allowed-symbols -1 0 1))
+    (slot color (type SYMBOL) (allowed-symbols black white)))
+
+(deftemplate move-request
+    ; Peticion de jugada humana o de la IA.
+    (slot row (type INTEGER))
+    (slot col (type INTEGER)))
+
+(deftemplate move-result
+    ; Resultado de la ultima jugada procesada.
+    (slot row (type INTEGER))
+    (slot col (type INTEGER))
+    (slot color (type SYMBOL) (allowed-symbols black white))
+    (slot status (type SYMBOL) (allowed-symbols ok invalid))
+    (slot flipped (type INTEGER) (default 0)))
+
+(deftemplate ai-request
+    ; Peticion para que juegue la IA.
+    (slot color (type SYMBOL) (allowed-symbols black white) (default white)))
+
+(deftemplate game-result
+    ; Resultado final de la partida.
+    (slot winner (type SYMBOL) (allowed-symbols black white draw))
+    (slot black-count (type INTEGER))
+    (slot white-count (type INTEGER)))
+
+(deftemplate turn-event
+    ; Eventos narrativos: pase de turno, cesion de ficha, IA, fin, etc.
+    (slot type (type SYMBOL) (allowed-symbols pass cede ai-play game-over))
+    (slot color (type SYMBOL) (allowed-symbols black white draw))
+    (slot row (type INTEGER) (default 0))
+    (slot col (type INTEGER) (default 0))
+    (slot info (type STRING) (default "")))
+
+(deftemplate recompute-valid-moves
+    ; Marca que hay que recalcular las jugadas validas.
 )
 
-(defrule init-board
-    ?req <- (init-request (size ?n))
-    (not (game))
-    (test (>= ?n 4))
-    (test (= (mod ?n 2) 0))
-    =>
-
-    (retract ?req)
-
-    (assert (game (size ?n) (turn -1) (status playing)))
-
-    (assert (player (color -1) (pieces 2)))
-    (assert (player (color 1) (pieces 2)))
-
-    (loop-for-count (?r 1 ?n)
-        ; Bucle para las columnas
-        (loop-for-count (?c 1 ?n)
-            ; Creamos cada casilla con estado 0
-            (assert (cell (row ?r) (col ?c) (piece 0)))
-        )
-    )
-    (modify (cell (row (/ ?n 2)) (col (/ ?n 2)) (piece 1)))
-    (modify (cell (row (+(/ ?n 2)) 1) (col (/ ?n 2)) (piece -1)))
-    (modify (cell (row (/ ?n 2)) (col (+(/ ?n 2)) 1) (piece -1)))
-    (modify (cell (row (+(/ ?n 2)) 1) (col (+(/ ?n 2)) 1) (piece 1)))
-    
-
+(deftemplate recompute-player-stats
+    ; Marca que hay que recalcular las fichas sobre el tablero.
 )
+
+(deftemplate render-request
+    ; Cuando aparece este hecho, se imprime el estado actual por consola.
+    (slot message (type STRING) (default "")))
