@@ -59,6 +59,7 @@
 	(bind ?nr (+ ?r ?dr))
 	(bind ?nc (+ ?c ?dc))
 
+	; Check 1: la casilla ADYACENTE en esa direccion debe contener ficha rival (y no salir del tablero).
 	(if (not (in-bounds ?nr ?nc ?size)) then
 		(return FALSE))
 	(if (neq (piece-at ?nr ?nc) ?opp) then
@@ -66,7 +67,7 @@
 
 	(bind ?nr (+ ?nr ?dr))
 	(bind ?nc (+ ?nc ?dc))
-
+	; Check 2: siguiendo en esa direccion, debe haber una ficha del jugador encerrando al rival (y sin salir del tablero).
 	(while (in-bounds ?nr ?nc ?size) do
 		(bind ?p (piece-at ?nr ?nc))
 		(if (eq ?p ?opp) then
@@ -121,16 +122,17 @@
 (deffunction flip-direction (?r ?c ?dr ?dc ?turn ?size)
 	; Voltea las fichas capturadas en una direccion concreta.
 	(bind ?opp (opponent-color ?turn))
-
+	; Si no se captura nada, no se hace nada.
 	(if (not (direction-captures ?r ?c ?dr ?dc ?turn ?opp ?size)) then
 		(return 0))
 
 	(bind ?count 0)
 	(bind ?nr (+ ?r ?dr))
 	(bind ?nc (+ ?c ?dc))
-
+	; Voltea las fichas del rival hasta llegar a una ficha propia.
 	(while (and (in-bounds ?nr ?nc ?size) (eq (piece-at ?nr ?nc) ?opp)) do
 		(set-piece-at ?nr ?nc ?turn)
+		; Contamos cuantas volteamos para el resultado de la jugada.
 		(bind ?count (+ ?count 1))
 		(bind ?nr (+ ?nr ?dr))
 		(bind ?nc (+ ?nc ?dc)))
@@ -226,6 +228,8 @@
 	(bind ?piece-diff 0)
 	(if (eq ?turn black) then
 		(bind ?piece-diff (+ (- ?black ?white) (+ 1 (* 2 ?flips))))
+		; El +1 es porque el jugador va a colocar una ficha mas, 
+		; y el *2 es porque cada ficha volteada cambia la diferencia en 2.
 	 else
 		(bind ?piece-diff (+ (- ?white ?black) (+ 1 (* 2 ?flips)))))
 
@@ -264,29 +268,30 @@
 
 (deffunction cell-mark (?r ?c)
 	; Devuelve el simbolo textual de cada casilla para el modo terminal.
-	; Se usan circulos para fichas y un punto para vacio.
+	; Se usan simbolos ASCII para evitar problemas de codificacion.
 	(bind ?piece (piece-at ?r ?c))
 
 	(if (eq ?piece black) then
-		(return "○"))
+		(return "X"))
 	(if (eq ?piece white) then
-		(return "●"))
+		(return "O"))
 
 	(do-for-fact ((?m valid-move)) (and (= ?m:row ?r) (= ?m:col ?c))
 		(return "+"))
 
-	(return "·"))
+	(return "."))
 
 (deffunction print-player-summary (?label ?color)
 	; Imprime las fichas actuales de un jugador.
 	(bind ?on-board 0)
-	(bind ?reserve 0)
+	;(bind ?reserve 0)
 
 	(do-for-fact ((?p player)) (eq ?p:color ?color)
 		(bind ?on-board ?p:on-board)
-		(bind ?reserve ?p:reserve))
+		;(bind ?reserve ?p:reserve)
+	)
 
-	(printout t ?label ": tablero=" ?on-board " reserva=" ?reserve crlf))
+	(printout t ?label ": tablero=" ?on-board crlf))
 
 (deffunction print-valid-moves (?turn ?size)
 	; Lista las jugadas posibles del turno actual.
@@ -309,14 +314,14 @@
 									" -> " ?m:status " | volteadas=" ?m:flipped crlf)
 			(bind ?shown TRUE))))
 
-(deffunction print-turn-event ()
-	; Muestra el ultimo evento narrativo relevante.
-	(bind ?shown FALSE)
-	(do-for-all-facts ((?e turn-event)) TRUE
-		(if (not ?shown) then
-			(printout t "Evento: " ?e:type " | color=" ?e:color
-									" | info=" ?e:info crlf)
-			(bind ?shown TRUE))))
+; (deffunction print-turn-event ()
+; 	; Muestra el ultimo evento narrativo relevante.
+; 	(bind ?shown FALSE)
+; 	(do-for-all-facts ((?e turn-event)) TRUE
+; 		(if (not ?shown) then
+; 			(printout t "Evento: " ?e:type " | color=" ?e:color
+; 									" | info=" ?e:info crlf)
+; 			(bind ?shown TRUE))))
 
 (deffunction print-game-result ()
 	; Imprime el resultado final si la partida ya termino.
@@ -337,6 +342,7 @@
 
 (deffunction render-board ()
 	; Dibuja por consola el tablero completo y el resumen del estado.
+	; Método implementado por IA para mostrar el estado actual en modo texto.
 	(bind ?size 8)
 	(bind ?turn black)
 	(bind ?status setup)
@@ -347,13 +353,13 @@
 		(bind ?status ?g:status))
 
 	(printout t crlf "==================================================" crlf)
-	(printout t "OTHELLO / REVERSI - VERSION SOLO CLIPS" crlf)
+	;(printout t "OTHELLO / REVERSI - VERSION SOLO CLIPS" crlf)
 	(printout t "Tamano: " ?size "x" ?size " | turno: " ?turn " | estado: " ?status crlf)
 	(print-player-summary "Negras" black)
 	(print-player-summary "Blancas" white)
 	(print-valid-moves ?turn ?size)
 
-	(printout t crlf "Tablero (○ negras, ● blancas, + jugada valida):" crlf)
+	(printout t crlf "Tablero (X negras, O blancas, + jugada valida):" crlf)
 	(printout t "   ")
 	(loop-for-count (?c 1 ?size)
 		(printout t (pad-2 ?c) " "))
@@ -366,6 +372,6 @@
 		(printout t crlf))
 
 	(print-last-move)
-	(print-turn-event)
+	;(print-turn-event)
 	(print-game-result)
 	(printout t "==================================================" crlf))

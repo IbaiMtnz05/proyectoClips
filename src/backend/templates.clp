@@ -25,7 +25,9 @@
     ; Contador de fichas de cada color.
     (slot color (type SYMBOL) (allowed-symbols black white))
     (slot on-board (type INTEGER))
-    (slot reserve (type INTEGER)))
+    ;(slot reserve (type INTEGER))
+    ; La reserva de fichas no se usara en esta implementacion
+    )
 
 (deftemplate valid-move
     ; Jugadas validas para el turno actual.
@@ -58,7 +60,7 @@
 
 (deftemplate turn-event
     ; Eventos narrativos: pase de turno, cesion de ficha, IA, fin, etc.
-    (slot type (type SYMBOL) (allowed-symbols pass cede ai-play game-over))
+    (slot type (type SYMBOL) (allowed-symbols pass ai-play game-over))
     (slot color (type SYMBOL) (allowed-symbols black white draw))
     (slot row (type INTEGER) (default 0))
     (slot col (type INTEGER) (default 0))

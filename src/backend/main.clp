@@ -10,6 +10,13 @@
 ;   (load "backend/main.clp")
 ;   (terminal-menu)
 ;
+
+
+;   (load "src/backend/templates.clp")
+;   (load "src/backend/functions.clp")
+;   (load "src/backend/rules.clp")
+;   (load "src/backend/main.clp")
+;   (terminal-menu)
 ; Si prefieres, puedes cargar primero todo y luego llamar a
 ; (start-game 6) o (start-game 10).
 ; ==========================================================
@@ -65,6 +72,7 @@
 	(assert (init-request (size ?size)))
 	(run)
 	(return TRUE))
+;Este atajo se ha reemplazado por el menu interactivo completo 
 
 (deffunction play-human (?row ?col)
 	; Atajo para jugar una ficha desde el prompt de CLIPS.
@@ -124,6 +132,7 @@
 	(bind ?size (ask-board-size))
 	(start-game ?size)
 	(show-command-help)
+	;(render-board)
 
 	(while (neq (game-status) finished) do
 		(if (eq (game-turn) black) then

@@ -13,6 +13,7 @@
     (test (= (mod ?n 2) 0))
     =>
     (retract ?req)
+    ; Limpiamos cualquier estado previo (resultados, eventos, renderizados, etc).
     (clear-move-results)
     (clear-turn-events)
     (clear-render-requests)
@@ -20,9 +21,9 @@
     (assert (game (size ?n) (turn black) (status playing)))
 
     ; Cada jugador empieza con dos fichas en el centro.
-    (bind ?initial-reserve (- (div (* ?n ?n) 2) 2))
-    (assert (player (color black) (on-board 2) (reserve ?initial-reserve)))
-    (assert (player (color white) (on-board 2) (reserve ?initial-reserve)))
+    ; (bind ?initial-reserve (- (div (* ?n ?n) 2) 2)) ELIMINAMOS LA RESEVA PORQUE NO LA USAREMOS
+    (assert (player (color black) (on-board 2) ))
+    (assert (player (color white) (on-board 2) ))
 
     (bind ?mid1 (div ?n 2))
     (bind ?mid2 (+ ?mid1 1))
@@ -38,7 +39,8 @@
     (set-piece-at ?mid2 ?mid1 black)
     (set-piece-at ?mid2 ?mid2 white)
 
-    (assert (recompute-valid-moves))
+    (assert (recompute-valid-moves)) 
+    ; Marcamos que el turno inicial tiene jugadas disponibles
     (assert (render-request (message "Partida iniciada"))))
 
 ; ---------- Recalculo de jugadas ----------
@@ -72,7 +74,7 @@
     (declare (salience 30))
     ?req <- (move-request (row ?r) (col ?c))
     ?g <- (game (size ?n) (turn ?turn) (status playing))
-    ?p <- (player (color ?turn) (reserve ?reserve&:(> ?reserve 0)))
+    ?p <- (player (color ?turn) )
     =>
     (if (and (in-bounds ?r ?c ?n) (is-valid-move ?r ?c ?turn ?n)) then
         (retract ?req)
@@ -80,7 +82,7 @@
         (clear-render-requests)
 
         (set-piece-at ?r ?c ?turn)
-        (modify ?p (reserve (- ?reserve 1)))
+       
 
         (bind ?flipped 0)
         (bind ?flipped (+ ?flipped (flip-direction ?r ?c -1 -1 ?turn ?n)))
@@ -113,23 +115,23 @@
 
 ; ---------- Flujo de turnos ----------
 
-(defrule cede-piece-when-needed
-    ; Regla de cesion: si el jugador actual no tiene reserva y el rival si,
-    ; se transfiere una ficha para que el turno siga siendo jugable.
-    (declare (salience 20))
-    (game (size ?n) (turn ?turn) (status playing))
-    (not (recompute-valid-moves))
-    ?pcur <- (player (color ?turn) (reserve 0))
-    ?popp <- (player (color ?opp) (reserve ?other-r&:(> ?other-r 0)))
-    (test (eq ?opp (opponent-color ?turn)))
-    (valid-move (color ?turn))
-    =>
-    (clear-turn-events)
-    (clear-render-requests)
-    (modify ?pcur (reserve 1))
-    (modify ?popp (reserve (- ?other-r 1)))
-    (assert (turn-event (type cede) (color ?turn) (info "El rival cede una ficha")))
-    (assert (render-request (message "Cesion de ficha"))))
+; ;(defrule cede-piece-when-needed
+;     ; Regla de cesion: si el jugador actual no tiene reserva y el rival si,
+;     ; se transfiere una ficha para que el turno siga siendo jugable.
+;     (declare (salience 20))
+;     (game (size ?n) (turn ?turn) (status playing))
+;     (not (recompute-valid-moves))
+;     ?pcur <- (player (color ?turn) (reserve 0))
+;     ?popp <- (player (color ?opp) (reserve ?other-r&:(> ?other-r 0)))
+;     (test (eq ?opp (opponent-color ?turn)))
+;     (valid-move (color ?turn))
+;     =>
+;     (clear-turn-events)
+;     (clear-render-requests)
+;     (modify ?pcur (reserve 1))
+;     (modify ?popp (reserve (- ?other-r 1)))
+;     (assert (turn-event (type cede) (color ?turn) (info "El rival cede una ficha")))
+;     (assert (render-request (message "Cesion de ficha"))))
 
 (defrule finish-game-when-board-full
     ; Si no quedan casillas vacias, termina la partida.
