@@ -5,10 +5,8 @@
 ; y las utilidades en functions.clp.
 ; ==========================================================
 
-(deftemplate init-request
-    ; Peticion para arrancar una nueva partida con un tamano concreto.
-    (slot size (type INTEGER)))
-
+;=====================================================
+; Bases del juego: tablero, jugadores, estado global.
 (deftemplate game
     ; Estado global de la partida.
     (slot size (type INTEGER))
@@ -28,6 +26,12 @@
     ;(slot reserve (type INTEGER))
     ; La reserva de fichas no se usara en esta implementacion
     )
+
+; =====================================================
+; Desarrollo de la partida: jugadas, eventos, resultados, etc.
+(deftemplate init-request
+    ; Peticion para arrancar una nueva partida con un tamano concreto.
+    (slot size (type INTEGER)))
 
 (deftemplate valid-move
     ; Jugadas validas para el turno actual.
@@ -59,7 +63,7 @@
     (slot white-count (type INTEGER)))
 
 (deftemplate turn-event
-    ; Eventos narrativos: pase de turno, cesion de ficha, IA, fin, etc.
+    ; Eventos narrativos: pase de turno, IA, fin.
     (slot type (type SYMBOL) (allowed-symbols pass ai-play game-over))
     (slot color (type SYMBOL) (allowed-symbols black white draw))
     (slot row (type INTEGER) (default 0))

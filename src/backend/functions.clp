@@ -353,7 +353,6 @@
 		(bind ?status ?g:status))
 
 	(printout t crlf "==================================================" crlf)
-	;(printout t "OTHELLO / REVERSI - VERSION SOLO CLIPS" crlf)
 	(printout t "Tamano: " ?size "x" ?size " | turno: " ?turn " | estado: " ?status crlf)
 	(print-player-summary "Negras" black)
 	(print-player-summary "Blancas" white)

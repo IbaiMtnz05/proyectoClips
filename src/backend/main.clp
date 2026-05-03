@@ -10,8 +10,8 @@
 ;   (load "backend/main.clp")
 ;   (terminal-menu)
 ;
-
-
+;
+;   
 ;   (load "src/backend/templates.clp")
 ;   (load "src/backend/functions.clp")
 ;   (load "src/backend/rules.clp")
@@ -55,6 +55,7 @@
 		(printout t "  4) 10x10" crlf)
 		(printout t "Opcion: ")
 		(bind ?opt (read))
+		; Convertir la opcion a tamano.
 		(bind ?size (menu-option-to-size ?opt))
 
 		(if (= ?size 0) then
