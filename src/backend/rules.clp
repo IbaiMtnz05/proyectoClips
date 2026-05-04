@@ -115,24 +115,6 @@
 
 ; ---------- Flujo de turnos ----------
 
-; ;(defrule cede-piece-when-needed
-;     ; Regla de cesion: si el jugador actual no tiene reserva y el rival si,
-;     ; se transfiere una ficha para que el turno siga siendo jugable.
-;     (declare (salience 20))
-;     (game (size ?n) (turn ?turn) (status playing))
-;     (not (recompute-valid-moves))
-;     ?pcur <- (player (color ?turn) (reserve 0))
-;     ?popp <- (player (color ?opp) (reserve ?other-r&:(> ?other-r 0)))
-;     (test (eq ?opp (opponent-color ?turn)))
-;     (valid-move (color ?turn))
-;     =>
-;     (clear-turn-events)
-;     (clear-render-requests)
-;     (modify ?pcur (reserve 1))
-;     (modify ?popp (reserve (- ?other-r 1)))
-;     (assert (turn-event (type cede) (color ?turn) (info "El rival cede una ficha")))
-;     (assert (render-request (message "Cesion de ficha"))))
-
 (defrule finish-game-when-board-full
     ; Si no quedan casillas vacias, termina la partida.
     (declare (salience 15))
