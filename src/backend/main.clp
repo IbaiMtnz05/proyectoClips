@@ -17,8 +17,7 @@
 ;   (load "src/backend/rules.clp")
 ;   (load "src/backend/main.clp")
 ;   (terminal-menu)
-; Si prefieres, puedes cargar primero todo y luego llamar a
-; (start-game 6) o (start-game 10).
+;
 ; ==========================================================
 
 (deffunction game-status ()
