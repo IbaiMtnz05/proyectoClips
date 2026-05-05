@@ -246,8 +246,8 @@
 	; Nota: evitamos recalcular movilidad en cada evaluacion para no
 	; bloquear el modo interactivo en tableros grandes.
 	(return (+ (* 12 ?piece-diff)
-						 (* 30 ?corner-bonus)
-						 (* -20 ?adj-penalty))))
+						 (* 120 ?corner-bonus)
+						 (* -80 ?adj-penalty))))
 
 (deffunction best-valid-move (?turn ?size)
 	; Devuelve la mejor jugada encontrada por la heuristica.
