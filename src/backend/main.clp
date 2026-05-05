@@ -20,6 +20,7 @@
 ;
 ; ==========================================================
 
+; --------------- Utilidades basicas --------------------------
 (deffunction game-status ()
 	; Devuelve el estado actual de la partida.
 	(bind ?status setup)
@@ -34,6 +35,17 @@
 		(bind ?turn ?g:turn))
 	(return ?turn))
 
+(deffunction play-human (?row ?col)
+	; Atajo para jugar una ficha desde el prompt de CLIPS.
+	(assert (move-request (row ?row) (col ?col)))
+	(run))
+
+(deffunction play-ai (?color)
+	; Atajo para pedir una jugada a la IA.
+	(assert (ai-request (color ?color)))
+	(run))
+
+; --------------- Interfaz e Interaccion -------------------------
 (deffunction menu-option-to-size (?opt)
 	; Convierte una opcion numerica de menu al tamano de tablero.
 	(if (= ?opt 1) then (return 4))
@@ -74,15 +86,6 @@
 	(return TRUE))
 ;Este atajo se ha reemplazado por el menu interactivo completo 
 
-(deffunction play-human (?row ?col)
-	; Atajo para jugar una ficha desde el prompt de CLIPS.
-	(assert (move-request (row ?row) (col ?col)))
-	(run))
-
-(deffunction play-ai (?color)
-	; Atajo para pedir una jugada a la IA.
-	(assert (ai-request (color ?color)))
-	(run))
 
 (deffunction parse-row-col (?line)
 	; Convierte un texto "fila,columna" en dos enteros.
