@@ -183,26 +183,26 @@
 	 else
 		(return FALSE)))
 
-(deffunction adjacent-to-empty-corner (?r ?c ?size)
-	; Penaliza jugar cerca de una esquina todavia vacia.
+(deffunction adjacent-to-corner (?r ?c ?size)
+	; Penaliza jugar cerca de una esquina.
 	(bind ?pen FALSE)
 
-	(if (and (eq (piece-at 1 1) empty)
+	(if (and 
 					 (<= ?r 2) (<= ?c 2)
 					 (not (and (= ?r 1) (= ?c 1)))) then
 		(bind ?pen TRUE))
 
-	(if (and (eq (piece-at 1 ?size) empty)
+	(if (and 
 					 (<= ?r 2) (>= ?c (- ?size 1))
 					 (not (and (= ?r 1) (= ?c ?size)))) then
 		(bind ?pen TRUE))
 
-	(if (and (eq (piece-at ?size 1) empty)
+	(if (and 
 					 (>= ?r (- ?size 1)) (<= ?c 2)
 					 (not (and (= ?r ?size) (= ?c 1)))) then
 		(bind ?pen TRUE))
 
-	(if (and (eq (piece-at ?size ?size) empty)
+	(if (and
 					 (>= ?r (- ?size 1)) (>= ?c (- ?size 1))
 					 (not (and (= ?r ?size) (= ?c ?size)))) then
 		(bind ?pen TRUE))
@@ -240,7 +240,7 @@
 
 	; Penaliza jugar junto a una esquina vacia.
 	(bind ?adj-penalty 0)
-	(if (adjacent-to-empty-corner ?r ?c ?size) then
+	(if (adjacent-to-corner ?r ?c ?size) then
 		(bind ?adj-penalty 1))
 
 	; Nota: evitamos recalcular movilidad en cada evaluacion para no
